@@ -9,6 +9,7 @@ import {
   login,
 } from '@directus/sdk';
 import dotenv from 'dotenv';
+import AthleteCategoriesCollection from './Collections/AthleteCategoriesCollection';
 
 dotenv.config();
 
@@ -263,9 +264,12 @@ class Main {
         client,
         Main.CMS_ATHLETE_CATEGORIES_COLLECTION
       );
-      if (foundCollection) {
-        console.log(`[INFO] collection found: ${foundCollection.collection}`);
-      } else {
+
+      if (foundCollection != undefined) {
+        // console.log(`[INFO] collection found: ${foundCollection.collection}`);
+        console.log(`[INFO] collection found.`);
+
+        } else {
         console.log(
           `[INFO] collection not found: ${Main.CMS_ATHLETE_CATEGORIES_COLLECTION}. Let's create it!`
         );
@@ -296,7 +300,8 @@ class Main {
         Main.CMS_SPORT_EVENTS_COLLECTION
       );
       if (foundCollection) {
-        console.log(`[INFO] collection found: ${foundCollection.collection}`);
+        // console.log(`[INFO] collection found: ${foundCollection.collection}`);
+        console.log(`[INFO] collection found.`);
       } else {
         console.log(
           `[INFO] collection not found: ${Main.CMS_SPORT_EVENTS_COLLECTION}. Let's create it!`
@@ -341,10 +346,13 @@ class Main {
       .with(rest());
 
     try {
-      Main.logEnvInfo();
-
-      await client.login('directus@example.com', 'directus', {});
-      await Main.createAthleteCategoriesCollectionIfNotExist(client);
+        Main.logEnvInfo();
+        await client.login('directus@example.com', 'directus', {});
+        let coll = new AthleteCategoriesCollection();
+        coll.createCollectionIfNotExist(
+            client
+        )
+    //   await Main.createAthleteCategoriesCollectionIfNotExist(client);
       await Main.createSportEventsCollectionIfNotExist(client);
     } catch (error: any) {
       console.error(`[ERROR] Main function encountered an error`, error);
