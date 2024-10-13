@@ -2,11 +2,11 @@ import {
     createCollection,
     DirectusCollection,
     readCollection,
-  } from '@directus/sdk';
+} from '@directus/sdk';
 import {
     ICollection,
     TExtendedCollection
- } from './ICollection'
+} from './ICollection'
 
 export abstract class CollectionBase implements ICollection {
 
@@ -31,7 +31,7 @@ export abstract class CollectionBase implements ICollection {
             return await client.request(
                 readCollection(this.name)
             );
-        } catch ($error) {}
+        } catch ($error) { }
     }
 
     /***

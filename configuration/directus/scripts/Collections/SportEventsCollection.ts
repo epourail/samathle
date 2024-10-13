@@ -1,8 +1,8 @@
 import { TExtendedCollection, ICollection } from './ICollection';
 
-export default class AthleteCategoriesCollection implements ICollection {
+export default class SportEventsCollection implements ICollection {
   public static getName(): string {
-    return 'athlete_categories';
+    return 'sport_events';
   }
 
   public static buildCollectionPayload(): TExtendedCollection {
@@ -87,7 +87,7 @@ export default class AthleteCategoriesCollection implements ICollection {
           type: 'string',
           meta: {
             interface: 'input',
-            special: null,
+            special: [],
             required: true,
           },
           schema: {},
@@ -97,7 +97,7 @@ export default class AthleteCategoriesCollection implements ICollection {
           type: 'string',
           meta: {
             interface: 'input',
-            special: null,
+            special: [],
             required: true,
           },
           schema: {},
