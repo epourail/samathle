@@ -2,6 +2,13 @@
 # Services
 # --------------------------------------------------------------------------------
 services:
+  restarter:
+    container_name: restart_container
+    image: docker:cli
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
+    command: ["/bin/sh", "-c", "while true; do sleep 86400; docker restart stream; done"]
+    restart: unless-stopped
+
   # Gateway (Kong)
   # -----------------------------------------------------------------------------
   kong-pre-init:
@@ -88,6 +95,18 @@ services:
     networks:
       - back
 
+  adminer:
+    container_name: ${COMPOSE_PROJECT_NAME}_adminer
+    image: adminer:latest
+    environment:
+      ADMINER_DEFAULT_SERVER: database
+    restart: always
+    networks:
+      - back
+      - front
+    ports:
+      - 8080:8080
+
   # mongodb:
   #   container_name: ${COMPOSE_PROJECT_NAME}_mongodb
   #   image: mongo:6.0
@@ -120,15 +139,15 @@ services:
   # -----------------------------------------------------------------------------
   directus:
     container_name: ${COMPOSE_PROJECT_NAME}_directus
-    image: directus/directus:10.5
+    image: directus/directus:11.1
     restart: unless-stopped
     depends_on:
       database:
         condition: service_healthy
       cache:
         condition: service_healthy
-      # keycloak:
-      #   condition: service_healthy
+      keycloak:
+        condition: service_healthy
     volumes:
       - ./configuration/directus/healthcheck.sh:/usr/local/bin/healthcheck.sh:ro
       #      - ./uploads:/directus/uploads
@@ -136,7 +155,7 @@ services:
     environment:
       # General
       PUBLIC_URL: https://${PUBLIC_HOST}:8443/cms
-      LOG_LEVEL: info
+      LOG_LEVEL: debug
       # Default role
       CMS_DIRECTUS_DEFAULT_ROLE_ID: ${CMS_DIRECTUS_DEFAULT_ROLE_ID}
       CMS_DIRECTUS_DEFAULT_ROLE_NAME: ${CMS_DIRECTUS_DEFAULT_ROLE_NAME}
@@ -160,15 +179,15 @@ services:
       REDIS: redis://${CACHE_INTERNAL_HOST}:${CACHE_INTERNAL_PORT}/4
       # Authentication
       AUTH_DISABLE_DEFAULT: 'false'
-      # AUTH_PROVIDERS: keycloak
-      # AUTH_KEYCLOAK_DRIVER: openid
-      # AUTH_KEYCLOAK_CLIENT_ID: ${IDP_KEYCLOAK_CLIENT_ID}
-      # AUTH_KEYCLOAK_CLIENT_SECRET: ${IDP_KEYCLOAK_CLIENT_SECRET}
-      # AUTH_KEYCLOAK_SCOPE: ${IDP_KEYCLOAK_SCOPE}
-      # AUTH_KEYCLOAK_ISSUER_URL: ${IDP_KEYCLOAK_WELLKNOWN_URL}
-      # AUTH_KEYCLOAK_IDENTIFIER_KEY: email
-      # AUTH_KEYCLOAK_ALLOW_PUBLIC_REGISTRATION: 'true'
-      # AUTH_KEYCLOAK_DEFAULT_ROLE_ID: ${CMS_DIRECTUS_DEFAULT_ROLE_ID}
+      AUTH_PROVIDERS: keycloak
+      AUTH_KEYCLOAK_DRIVER: openid
+      AUTH_KEYCLOAK_CLIENT_ID: ${IDP_KEYCLOAK_DIRECTUS_CLIENT_ID}
+      AUTH_KEYCLOAK_CLIENT_SECRET: ${IDP_KEYCLOAK_DIRECTUS_CLIENT_SECRET}
+      AUTH_KEYCLOAK_SCOPE: ${IDP_KEYCLOAK_SCOPE}
+      AUTH_KEYCLOAK_ISSUER_URL: ${IDP_KEYCLOAK_WELLKNOWN_URL}
+      AUTH_KEYCLOAK_IDENTIFIER_KEY: email
+      AUTH_KEYCLOAK_ALLOW_PUBLIC_REGISTRATION: 'true'
+      AUTH_KEYCLOAK_DEFAULT_ROLE_ID: ${CMS_DIRECTUS_DEFAULT_ROLE_ID}
       # Proxy
       ROOT_REDIRECT: '/cms/admin'
     healthcheck:
@@ -188,60 +207,60 @@ services:
 
   # IDP (Keycloak)
   # -----------------------------------------------------------------------------
-  # keycloak-pre-init:
-  #   container_name: ${COMPOSE_PROJECT_NAME}_keycloak-pre-init
-  #   image: busybox:1.36
-  #   command: sh -c "sed 's/##PUBLIC_HOST##/${PUBLIC_HOST}/g' /tmp/keycloak/realm.tpl/realm-samathle.tpl.json > /tmp/keycloak/realm/realm-samathle.docker.json"
-  #   volumes:
-  #     - ./configuration/keycloak:/tmp/keycloak:rw
-  #   networks:
-  #     - back
+  keycloak-pre-init:
+    container_name: ${COMPOSE_PROJECT_NAME}_keycloak-pre-init
+    image: busybox:1.36
+    command: sh -c "sed 's/##PUBLIC_HOST##/${PUBLIC_HOST}/g' /tmp/keycloak/realm.tpl/realm-samathle.tpl.json > /tmp/keycloak/realm/realm-samathle.docker.json"
+    volumes:
+      - ./configuration/keycloak:/tmp/keycloak:rw
+    networks:
+      - back
 
-  # keycloak:
-  #   container_name: ${COMPOSE_PROJECT_NAME}_keycloak
-  #   image: quay.io/keycloak/keycloak:22.0
-  #   depends_on:
-  #     database:
-  #       condition: service_healthy
-  #   command: 'start --http-enabled=true --import-realm'
-  #   volumes:
-  #     - ./configuration/keycloak/healthcheck.sh:/usr/local/bin/healthcheck.sh:ro
-  #     - ./configuration/keycloak/realm:/opt/keycloak/data/import:ro
-  #   environment:
-  #     # Admin Account
-  #     KEYCLOAK_ADMIN: ${IDP_KEYCLOAK_ADMIN_USERNAME}
-  #     KEYCLOAK_ADMIN_PASSWORD: ${IDP_KEYCLOAK_ADMIN_PASSWORD}
-  #     # Logging
-  #     KC_LOG_LEVEL: info
-  #     # Health
-  #     KC_HEALTH_ENABLED: 'true'
-  #     # Proxy
-  #     KC_PROXY: edge
-  #     PROXY_ADDRESS_FORWARDING: 'true'
-  #     # Hostname
-  #     KC_HOSTNAME_ADMIN_URL: https://${PUBLIC_HOST}:8443/auth
-  #     KC_HOSTNAME_URL: https://${PUBLIC_HOST}:8443/auth
-  #     # Database
-  #     KC_DB: mariadb
-  #     KC_DB_URL_HOST: ${DB_MARIADB_INTERNAL_HOST}
-  #     KC_DB_URL_PORT: ${DB_MARIADB_INTERNAL_PORT}
-  #     KC_DB_URL_DATABASE: ${DB_KEYCLOAK_DATABASE}
-  #     KC_DB_USERNAME: ${DB_KEYCLOAK_USERNAME}
-  #     KC_DB_PASSWORD: ${DB_KEYCLOAK_PASSWORD}
-  #   healthcheck:
-  #     test:
-  #       [
-  #         'CMD',
-  #         'healthcheck.sh',
-  #         '${KEYCLOAK_INTERNAL_HOST}',
-  #         '${KEYCLOAK_INTERNAL_PORT}',
-  #       ]
-  #     interval: 20s
-  #     timeout: 5s
-  #     retries: 10
-  #   networks:
-  #     - front
-  #     - back
+  keycloak:
+    container_name: ${COMPOSE_PROJECT_NAME}_keycloak
+    image: quay.io/keycloak/keycloak:22.0
+    depends_on:
+      database:
+        condition: service_healthy
+    command: 'start --http-enabled=true --import-realm'
+    volumes:
+      - ./configuration/keycloak/healthcheck.sh:/usr/local/bin/healthcheck.sh:ro
+      - ./configuration/keycloak/realm:/opt/keycloak/data/import:ro
+    environment:
+      # Admin Account
+      KEYCLOAK_ADMIN: ${IDP_KEYCLOAK_ADMIN_USERNAME}
+      KEYCLOAK_ADMIN_PASSWORD: ${IDP_KEYCLOAK_ADMIN_PASSWORD}
+      # Logging
+      KC_LOG_LEVEL: info
+      # Health
+      KC_HEALTH_ENABLED: 'true'
+      # Proxy
+      KC_PROXY: edge
+      PROXY_ADDRESS_FORWARDING: 'true'
+      # Hostname
+      KC_HOSTNAME_ADMIN_URL: https://${PUBLIC_HOST}:8443/auth
+      KC_HOSTNAME_URL: https://${PUBLIC_HOST}:8443/auth
+      # Database
+      KC_DB: mariadb
+      KC_DB_URL_HOST: ${DB_MARIADB_INTERNAL_HOST}
+      KC_DB_URL_PORT: ${DB_MARIADB_INTERNAL_PORT}
+      KC_DB_URL_DATABASE: ${DB_KEYCLOAK_DATABASE}
+      KC_DB_USERNAME: ${DB_KEYCLOAK_USERNAME}
+      KC_DB_PASSWORD: ${DB_KEYCLOAK_PASSWORD}
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'healthcheck.sh',
+          '${KEYCLOAK_INTERNAL_HOST}',
+          '${KEYCLOAK_INTERNAL_PORT}',
+        ]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+    networks:
+      - front
+      - back
 
   # SAMAthle Domain: init
   # -----------------------------------------------------------------------------
@@ -285,6 +304,41 @@ services:
   #     - front
   #     - back
 
+  grafana:
+    image: grafana/grafana
+    container_name: ${COMPOSE_PROJECT_NAME}_grafana
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    volumes:
+      - ./configuration/grafana/healthcheck.sh:/usr/local/bin/healthcheck.sh:ro
+      - ./configuration/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - ./configuration/grafana/dashboards:/etc/grafana/provisioning/dashboards:rw
+      #- ./configuration/grafana/datasources:/etc/grafana/provisioning/datasources:rw
+      - grafana-data:/var/lib/grafana
+    environment:
+      GF_SERVER_DOMAIN: ${PUBLIC_HOST}
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_EMAIL}
+      GF_SECURITY_ADMIN_EMAIL: ${GRAFANA_ADMIN_EMAIL}
+      GF_SECURITY_ADMIN_PASSOWRD: ${GRAFANA_ADMIN_PASSWORD}
+      GF_INSTALL_PLUGINS: yesoreyeram-infinity-datasource
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'healthcheck.sh',
+          '${GRAFANA_INTERNAL_HOST}',
+          '${GRAFANA_INTERNAL_PORT}',
+        ]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+    networks:
+      - front
+    ports:
+      - 3000:3000
+
 # --------------------------------------------------------------------------------
 # Networks
 # --------------------------------------------------------------------------------
@@ -296,5 +350,6 @@ networks:
 # Volumes
 # --------------------------------------------------------------------------------
 volumes:
+  grafana-data:
   mariadb_data:
   # mongodb_data:

@@ -291,6 +291,17 @@
       ],
       "security-admin-console": [],
       "admin-cli": [],
+      "grafana-ui": [
+        {
+          "id": "d19aa23b-c097-499a-b4f0-9fb26e337837",
+          "name": "User",
+          "description": "User Role",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "e61e09ac-f49b-41f7-870f-6b9565a4b29f",
+          "attributes": {}
+        }
+      ],
       "account-console": [],
       "broker": [
         {
@@ -726,7 +737,7 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "dRz7o4GQXY281GdoQKpeWqm833kZqhiJ",
       "redirectUris": [
-        "https://##PUBLIC_HOST##:8443/cms/auth/login/keycloak/callback"
+        "https://samathle.mvp.local:8443/cms/auth/login/keycloak/callback"
       ],
       "webOrigins": ["*"],
       "notBefore": 0,
@@ -741,9 +752,9 @@
       "protocol": "openid-connect",
       "attributes": {
         "oidc.ciba.grant.enabled": "false",
-        "oauth2.device.authorization.grant.enabled": "false",
         "client.secret.creation.time": "1689765183",
         "backchannel.logout.session.required": "true",
+        "oauth2.device.authorization.grant.enabled": "false",
         "backchannel.logout.revoke.offline.tokens": "false"
       },
       "authenticationFlowBindingOverrides": {},
@@ -757,6 +768,59 @@
         "profile",
         "roles",
         "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "id": "e61e09ac-f49b-41f7-870f-6b9565a4b29f",
+      "clientId": "grafana-ui",
+      "name": "grafana UI",
+      "description": "Grafana User Interface access",
+      "rootUrl": "https://samathle.mvp.local:8443/grafana",
+      "adminUrl": "https://samathle.mvp.local:8443/grafana",
+      "baseUrl": "",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "**********",
+      "redirectUris": [
+        "https://samathle.mvp.local:8443/grafana/login/generic_oauth"
+      ],
+      "webOrigins": ["https://samathle.mvp.local:8443/grafana"],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "publicClient": false,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "oidc.ciba.grant.enabled": "false",
+        "client.secret.creation.time": "1729245274",
+        "backchannel.logout.session.required": "true",
+        "display.on.consent.screen": "false",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "offline_access",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "role-claim",
+        "address",
+        "phone",
         "microprofile-jwt"
       ]
     },
@@ -1424,14 +1488,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "saml-user-property-mapper",
             "oidc-sha256-pairwise-sub-mapper",
-            "oidc-address-mapper",
-            "oidc-usermodel-attribute-mapper",
             "saml-user-attribute-mapper",
-            "oidc-full-name-mapper",
+            "oidc-usermodel-attribute-mapper",
+            "oidc-address-mapper",
+            "oidc-usermodel-property-mapper",
             "saml-role-list-mapper",
-            "oidc-usermodel-property-mapper"
+            "oidc-full-name-mapper",
+            "saml-user-property-mapper"
           ]
         }
       },
@@ -1490,14 +1554,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "oidc-address-mapper",
-            "oidc-usermodel-attribute-mapper",
-            "saml-role-list-mapper",
-            "saml-user-attribute-mapper",
-            "oidc-full-name-mapper",
-            "oidc-usermodel-property-mapper",
             "oidc-sha256-pairwise-sub-mapper",
-            "saml-user-property-mapper"
+            "saml-role-list-mapper",
+            "oidc-usermodel-attribute-mapper",
+            "oidc-usermodel-property-mapper",
+            "saml-user-attribute-mapper",
+            "saml-user-property-mapper",
+            "oidc-address-mapper",
+            "oidc-full-name-mapper"
           ]
         }
       }
@@ -2207,7 +2271,7 @@
     "frontendUrl": "https://##PUBLIC_HOST##:8443/auth",
     "acr.loa.map": "{}"
   },
-  "keycloakVersion": "22.0.1",
+  "keycloakVersion": "22.0.5",
   "userManagedAccessAllowed": false,
   "clientProfiles": {
     "profiles": []

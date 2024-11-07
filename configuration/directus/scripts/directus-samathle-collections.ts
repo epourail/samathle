@@ -34,7 +34,13 @@ class Main {
       await client.login(this.ADMIN_EMAIL, this.ADMIN_PWD, {});
 
       let collBuilder = new CollectionBuilder(client);
-      await collBuilder.WithAthleteCategories().WithSportEvents().build();
+      await collBuilder
+        .WithAthletes()
+        .WithAthleteCategories()
+        .WithSports()
+        .WithEvents()
+        .WithPerformances()
+        .build();
     } catch (error: any) {
       console.error(`[ERROR] Main function encountered an error`, error);
       console.error(error);

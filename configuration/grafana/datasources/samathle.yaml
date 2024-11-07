@@ -1,0 +1,12 @@
+apiVersion: 1
+datasources:
+  - name: "samathle (local)"
+    uid: be1j7pomgo6psa
+    type: yesoreyeram-infinity-datasource
+    isDefault: true
+    url: http://directus:8055
+    url_options: 
+      params:
+      - key: access_token
+        value: ARMrAk5OUepZOZAz41xpQG3UzdRYPEMF
+

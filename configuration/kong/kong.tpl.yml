@@ -11,26 +11,36 @@ services:
           - '/cms'
         strip_path: true
 
-  # - name: keycloak-service
-  #   url: http://keycloak:8080
-  #   routes:
-  #     - name: keycloak-route
-  #       paths:
-  #         - '/auth'
-  #       strip_path: true
-  #       hosts:
-  #         - '##PUBLIC_HOST##'
+  - name: grafana-service
+    url: http://grafana:3000
+    routes:
+      - name: grafana-route
+        hosts:
+          - '##PUBLIC_HOST##'
+        paths:
+          - '/grafana'
+        strip_path: true
 
-  # - name: adminer-service
-  #   url: http://adminer:8080
-  #   routes:
-  #     - name: adminer-route
-  #       paths:
-  #         - '/adminer'
-  #       strip_path: true
-  #       preserve_host: true
-  #       hosts:
-  #         - '##PUBLIC_HOST##'
+  - name: keycloak-service
+    url: http://keycloak:8080
+    routes:
+      - name: keycloak-route
+        hosts:
+          - '##PUBLIC_HOST##'
+        paths:
+          - '/auth'
+        strip_path: true
+
+  - name: adminer-service
+    url: http://adminer:8080
+    routes:
+      - name: adminer-route
+        paths:
+          - '/adminer'
+        strip_path: true
+        preserve_host: true
+        hosts:
+          - '##PUBLIC_HOST##'
 
   # - name: api-places-service
   #   url: http://places-api:80

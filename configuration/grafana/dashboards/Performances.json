@@ -1,0 +1,264 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 3,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "name": "samathle (local)",
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "be1j7pomgo6psa"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "columns": [],
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "be1j7pomgo6psa"
+          },
+          "filters": [],
+          "format": "table",
+          "global_query_id": "",
+          "refId": "A",
+          "root_selector": "",
+          "source": "url",
+          "type": "json",
+          "url": "https://github.com/grafana/grafana-infinity-datasource/blob/main/testdata/users.json",
+          "url_options": {
+            "data": "",
+            "method": "GET"
+          }
+        }
+      ],
+      "title": "Panel Title",
+      "type": "timeseries"
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "be1j7pomgo6psa"
+        },
+        "definition": "samathle (local)- (infinity) graphql",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Athlete",
+        "multi": false,
+        "name": "athlete",
+        "options": [],
+        "query": {
+          "infinityQuery": {
+            "columns": [
+              {
+                "selector": "fullname",
+                "text": "test",
+                "type": "string"
+              },
+              {
+                "selector": "id",
+                "text": "value",
+                "type": "string"
+              }
+            ],
+            "filters": [
+              {
+                "field": "text",
+                "operator": "equals",
+                "value": [""]
+              }
+            ],
+            "format": "table",
+            "refId": "variable",
+            "root_selector": "data.athletes",
+            "source": "url",
+            "type": "graphql",
+            "url": "/graphql",
+            "url_options": {
+              "body_content_type": "text/plain",
+              "body_graphql_query": "query Athletes  {\n\tathletes  {\n\t\tid\n\t\tfullname\n\t}\n}",
+              "body_graphql_variables": "",
+              "body_type": "graphql",
+              "data": "query Athletes {\n\tathletes {\n\t\tfirstname\n\t\tlastname\n\t}\n}",
+              "method": "POST"
+            }
+          },
+          "query": "",
+          "queryType": "infinity"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "mif",
+          "value": "7924a22a-ee1e-4699-958c-e51daefac0d0"
+        },
+        "datasource": {
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "be1j7pomgo6psa"
+        },
+        "definition": "samathle (local)- (infinity) graphql",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Categorie",
+        "multi": false,
+        "name": "category",
+        "options": [],
+        "query": {
+          "infinityQuery": {
+            "columns": [
+              {
+                "selector": "technical_id",
+                "text": "text",
+                "type": "string"
+              },
+              {
+                "selector": "id",
+                "text": "value",
+                "type": "string"
+              }
+            ],
+            "filters": [],
+            "format": "table",
+            "refId": "variable",
+            "root_selector": "data.athlete_categories",
+            "source": "url",
+            "type": "graphql",
+            "url": "/graphql",
+            "url_options": {
+              "body_content_type": "text/plain",
+              "body_graphql_query": "query Categories {\n\tathlete_categories {\n\t\tid\n\t\ttechnical_id\n\t}\n}",
+              "body_type": "graphql",
+              "data": "query Athletes {\n\tathletes {\n\t\tfirstname\n\t\tlastname\n\t}\n}",
+              "method": "POST"
+            }
+          },
+          "query": "",
+          "queryType": "infinity"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "hidden": true
+  },
+  "timezone": "browser",
+  "title": "Performances",
+  "uid": "ae1jsqu0z9gqoc",
+  "version": 13,
+  "weekStart": ""
+}
